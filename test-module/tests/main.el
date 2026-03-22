@@ -25,29 +25,17 @@
          (name (symbol-name f-symbol))
          (error-file (make-temp-file "destructive-fn"))
          (exit-code
-          (pcase system-type
-            ((or 'darwin 'gnu/linux 'berkeley-unix)
-             (call-process
-              "bash"
-              ;; If VERBOSE, redirect subprocess's stdout to stderr
-              nil (list (if (getenv "VERBOSE")
-                            '(:file "/dev/stderr")
-                          t)
-                        error-file)
-              nil (if t/support-module-assertions-p
-                      "./bin/fn-module-assertions"
-                    "./bin/fn") name))
-            ('windows-nt
-             (call-process
-              "powershell"
-              ;; If VERBOSE, redirect subprocess's stdout to stderr
-              nil (list t error-file)
-              nil
-              ;; ARGS
-              "-NoProfile" (if t/support-module-assertions-p
-                               ".\\bin\\fn-module-assertions.ps1"
-                             ".\\bin\\fn.ps1") name))
-            (_ (error "Unsupported system-type: %s" system-type))))
+          (apply #'call-process
+                 (or (getenv "EMACS") "emacs") nil
+                 (list t error-file)
+                 nil
+                 (append
+                  (list "--batch"
+                        "--directory" (getenv "MODULE_DIR"))
+                  (when t/support-module-assertions-p '("--module-assertions"))
+                  (list "-l" (expand-file-name "test-module/tests/main.el"
+                                               (getenv "PROJECT_ROOT"))
+                        "-f" name))))
          (error-string
           (with-temp-buffer
             (insert-file-contents error-file)
@@ -389,8 +377,6 @@
 (ert-deftest global-ref::free-after-normal-return ()
   (unless t/support-module-assertions-p
     (ert-skip "--module-assertions is not supported"))
-  (when (eq system-type 'windows-nt)
-    (ert-skip "We don't know how to correctly handle failed PowerShell subprocess"))
   (when (bound-and-true-p module-rs-disable-gc-bug-31238-workaround)
     (ert-skip "Workaround for the GC bug 31238 was already disabled"))
   (should (string-match-p
@@ -400,8 +386,6 @@
 (ert-deftest global-ref::free-after-error ()
   (unless t/support-module-assertions-p
     (ert-skip "--module-assertions is not supported"))
-  (when (eq system-type 'windows-nt)
-    (ert-skip "We don't know how to correctly handle failed PowerShell subprocess"))
   (when (bound-and-true-p module-rs-disable-gc-bug-31238-workaround)
     (ert-skip "Workaround for the GC bug 31238 was already disabled"))
   (should (string-match-p

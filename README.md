@@ -40,15 +40,13 @@ fn say_hello(env: &Env, name: String) -> Result<Value<'_>> {
 
 - Building:
     ```shell
-    bin/build
+    cargo xtask build
     ```
 - Testing:
     ```shell
-    bin/test
+    cargo xtask test
     ```
 - Continuous testing (requires `cargo-watch`):
     ```shell
-    bin/test watch
+    cargo xtask test --watch
     ```
-
-On Windows, use PowerShell to run the corresponding `.ps1` scripts.

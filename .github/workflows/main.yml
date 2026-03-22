@@ -69,13 +69,13 @@ jobs:
           persist-credentials: false
 
       - name: Build
-        run: ./bin/build
+        run: cargo xtask build
         if: runner.os != 'Windows'
 
       # msys2 {0} shell puts MSYS2 MINGW64 gcc ahead of the pre-installed UCRT gcc in PATH,
       # so the built DLLs link MSVCRT — the same CRT as MSYS2's Emacs package.
       - name: Build (Windows)
-        run: ./bin/build
+        run: cargo xtask build
         shell: msys2 {0}
         if: runner.os == 'Windows'
 
@@ -87,11 +87,11 @@ jobs:
           version: ${{ matrix.emacs-version }}
 
       - name: Test
-        run: ./bin/test
+        run: cargo xtask test
         if: runner.os != 'Windows'
 
       # msys2 {0} also makes Emacs (installed as a MSYS2 package) visible on PATH.
       - name: Test (Windows)
-        run: ./bin/test
+        run: cargo xtask test
         shell: msys2 {0}
         if: runner.os == 'Windows'
