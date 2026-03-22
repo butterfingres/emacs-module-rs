@@ -87,11 +87,11 @@ jobs:
           version: ${{ matrix.emacs-version }}
 
       - name: Test
-        run: cargo xtask test
+        run: cargo xtask test --verbose
         if: runner.os != 'Windows'
 
       # msys2 {0} also makes Emacs (installed as a MSYS2 package) visible on PATH.
       - name: Test (Windows)
-        run: cargo xtask test
+        run: cargo xtask test --verbose
         shell: msys2 {0}
         if: runner.os == 'Windows'
