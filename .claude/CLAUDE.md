@@ -18,15 +18,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Build all crates
-./bin/build             # debug
-./bin/build release     # release
+cargo xtask build           # debug
+cargo xtask build --release # release
 
 # Run Rust unit tests
 cargo test --all
 
 # Run integration tests (requires Emacs installed)
-./bin/test              # runs once
-./bin/test watch        # continuous via cargo-watch
+cargo xtask test              # runs once
+cargo xtask test --watch      # continuous via cargo-watch
 ```
 
 The integration tests compile `test-module` as a `.so`/`.dylib`, then run Emacs in batch mode loading `test-module/tests/main.el` (ERT framework).
@@ -64,7 +64,7 @@ Use `global_refs!` macro / `OnceGlobalRef` (`src/global.rs`) to hold Lisp values
 
 ## Platform Notes
 
-`bin/env.bash` detects the platform and sets `EXT` to `.so` (Linux/FreeBSD) or `.dylib` (macOS). Windows uses PowerShell scripts (`bin/build.ps1`, `bin/test.ps1`).
+Platform detection (`.so`/`.dylib`/`.dll`, lib prefix) is handled by `xtask/src/main.rs` via `cfg!()`.
 
 ## Changelog
 
