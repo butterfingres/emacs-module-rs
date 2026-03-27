@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 - Upgraded to Rust 2024 edition.
-    - This also raised the minimum supported Rust version to 1.85.
+- Raised minimum support Rust version (MSRV) to 1.87 (for `PipeWriter`).
 
 ## [0.21.0] - 2026-03-18
 - Added `emacs-28` feature with `Env::open_channel` for pipe-based communication (Emacs 28+).

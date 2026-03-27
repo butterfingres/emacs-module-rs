@@ -3,9 +3,9 @@
 `emacs-module-rs` provides high-level Rust binding and tools to write Emacs's dynamic modules. It is easy to use if you know either Rust or Emacs.
 
 It currently supports:
-- Stable Rust (latest stable recommended; 1.56 minimum).
+- Stable Rust (latest stable recommended; 1.87 minimum).
 - Emacs 25 or above, built with module support.
-- macOS, Linux, Windows.
+- Linux, macOS, FreeBSD, Windows.
 
 ## Setting up
 

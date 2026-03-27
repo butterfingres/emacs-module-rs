@@ -21,6 +21,8 @@ include = [
     "README.md",
     "src/**/*"
 ]
+rust-version = "1.87"
+resolver = "3"
 
 [dependencies]
 thiserror = "2.0"
@@ -31,9 +33,6 @@ emacs-macros = { path = "emacs-macros", version = "0.17.0" }
 
 [target.'cfg(windows)'.dependencies]
 libc = "0.2"
-
-[build-dependencies]
-rustc_version = "0.4"
 
 [features]
 default = []
