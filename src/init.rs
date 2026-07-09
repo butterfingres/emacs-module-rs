@@ -4,7 +4,7 @@
 
 use std::{
     os, panic,
-    collections::HashMap,
+    borrow::Cow, collections::HashMap,
     sync::{LazyLock, Mutex, atomic::AtomicBool},
 };
 
@@ -75,7 +75,7 @@ pub static __INIT_FNS__: LazyLock<Mutex<FnMap>> = LazyLock::new(|| Mutex::new(Ha
 /// attribute macro #[[`defun`]].
 ///
 /// [`defun`]: attr.defun.html
-pub static __PREFIX__: LazyLock<Mutex<[String; 2]>> = LazyLock::new(|| Mutex::new(["".to_owned(), "-".to_owned()]));
+pub static __PREFIX__: LazyLock<Mutex<[Cow<'static, str>; 2]>> = LazyLock::new(|| Mutex::new([""; 2].map(Cow::Borrowed)));
 
 pub static __MOD_IN_NAME__: LazyLock<AtomicBool> = LazyLock::new(|| AtomicBool::new(true));
 

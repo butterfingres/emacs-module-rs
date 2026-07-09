@@ -119,22 +119,22 @@ impl Module {
         let mod_in_name = util::mod_in_name_path();
         let crate_mod_in_name = &self.opts.mod_in_name;
         let feature = match &self.opts.name {
-            Name::Crate => quote!(::emacs::init::lisp_pkg(module_path!())),
-            Name::Str(name) => quote!(#name.to_owned()),
+            Name::Crate => quote!(::std::borrow::Cow::Owned(::emacs::init::lisp_pkg(module_path!()))),
+            Name::Str(name) => quote!(::std::borrow::Cow::Borrowed(#name)),
             Name::Fn => {
                 let name = util::lisp_name(hook);
-                quote!(#name.to_owned())
+                quote!(::std::borrow::Cow::Borrowed(#name))
             }
         };
         let defun_prefix = match &self.opts.defun_prefix {
             None => quote!(feature.clone()),
-            Some(defun_prefix) => quote!(#defun_prefix.to_owned()),
+            Some(defun_prefix) => quote!(::std::borrow::Cow::Borrowed(#defun_prefix)),
         };
         let set_prefix = quote! {
             {
                 let mut prefix = #prefix.try_lock()
                     .expect("Failed to acquire write lock on module prefix");
-                *prefix = [#defun_prefix, #separator.to_owned()];
+                *prefix = [#defun_prefix, ::std::borrow::Cow::Borrowed(#separator)];
             }
         };
         let configure_mod_in_name = quote! {
