@@ -167,7 +167,23 @@ impl Module {
             {
                 let mut prefix = #prefix.try_lock()
                     .expect("Failed to acquire write lock on module prefix");
-                *prefix = [#defun_prefix, #separator];
+
+                const LEN: usize = #defun_prefix.len() + #separator.len();
+                const BUF: [u8; LEN] = {
+                    let mut buf = [0; LEN];
+                    // SAFETY: this is checked at compile time since this
+                    // is in a `const` block
+                    unsafe {
+                        ::std::ptr::copy_nonoverlapping(FEATURE.as_ptr(), buf.as_mut_ptr(), FEATURE.len());
+                        ::std::ptr::copy_nonoverlapping(#separator.as_ptr(), buf.as_mut_ptr().wrapping_add(FEATURE.len()), #separator.len());
+                    }
+                    buf
+                };
+                // SAFETY: this is checked at compile time since this
+                // is in a `const` block
+                const PREFIX: &str = unsafe { ::std::str::from_utf8_unchecked(&BUF) };
+
+                *prefix = PREFIX;
             }
         };
         let configure_mod_in_name = quote! {
