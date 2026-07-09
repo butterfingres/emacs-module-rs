@@ -261,14 +261,12 @@ impl LispFunc {
         let exporter = self.exporter_ident();
         let registrator = self.registrator_ident();
         let init_fns = util::init_fns_path();
-        let name = format!("{}", self.def.sig.ident);
         quote! {
             #[::emacs::deps::ctor::ctor(crate_path = ::emacs::deps::ctor)]
             fn #registrator() {
-                const FULL_PATH: &str = concat!(module_path!(), "::", #name);
                 let mut funcs = #init_fns.lock()
-                    .expect("Failed to acquire a write lock on map of initializers");
-                funcs.insert(FULL_PATH, ::std::boxed::Box::new(#exporter));
+                    .expect("Failed to acquire a write lock on initializers");
+                funcs.push(::std::boxed::Box::new(#exporter));
             }
         }
     }

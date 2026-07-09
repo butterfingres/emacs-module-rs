@@ -143,8 +143,8 @@ impl Module {
         let export_lisp_funcs = quote! {
             {
                 let funcs = #init_fns.try_lock()
-                    .expect("Failed to acquire a read lock on map of initializers");
-                for (_, func) in funcs.iter() {
+                    .expect("Failed to acquire a read lock on initializers");
+                for func in funcs.iter() {
                     func(#env)?
                 }
             }
