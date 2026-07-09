@@ -80,8 +80,9 @@ fn gc_after_new_float(env: &Env) -> Result<Value<'_>> {
 fn gc_after_uninterning(env: &Env) -> Result<Value<'_>> {
     // Wouldn't fail if count is 1 or 2.
     create_collect_use(env, 3, || {
-        let x = env.intern("xyz")?;
-        env.call("unintern", [x])?;
+        let obarray = env.call("obarray-make", (1,))?;
+        let x = env.call("intern", ("xyz", obarray))?;
+        env.call("unintern", [x, obarray])?;
         Ok(x)
     }, print)
 }
