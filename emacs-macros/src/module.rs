@@ -119,22 +119,55 @@ impl Module {
         let mod_in_name = util::mod_in_name_path();
         let crate_mod_in_name = &self.opts.mod_in_name;
         let feature = match &self.opts.name {
-            Name::Crate => quote!(::std::borrow::Cow::Owned(::emacs::init::lisp_pkg(module_path!()))),
-            Name::Str(name) => quote!(::std::borrow::Cow::Borrowed(#name)),
+            Name::Crate => quote!({
+                const PATH: &str = module_path!();
+
+                const LEN: usize = {
+                    let mut i = 0;
+                    while i < PATH.len() {
+                        if PATH.as_bytes()[i] == b':' {
+                            break;
+                        }
+                        i += 1;
+                    }
+                    i
+                };
+
+                const BUF: [u8; LEN] = {
+                    let mut buf = [0; LEN];
+                    let mut i = 0;
+                    while i < LEN {
+                        let ch = PATH.as_bytes()[i];
+                        if ch == b'_' {
+                            buf[i] = b'-';
+                        } else {
+                            buf[i] = ch;
+                        }
+                        i += 1;
+                    }
+                    buf
+                };
+
+                // SAFETY: this is checked at compile time since this
+                // is in a `const` block
+                const NAME: &str = unsafe { ::std::str::from_utf8_unchecked(&BUF) };
+                NAME
+            }),
+            Name::Str(name) => quote!(#name),
             Name::Fn => {
                 let name = util::lisp_name(hook);
-                quote!(::std::borrow::Cow::Borrowed(#name))
+                quote!(#name)
             }
         };
         let defun_prefix = match &self.opts.defun_prefix {
-            None => quote!(feature.clone()),
-            Some(defun_prefix) => quote!(::std::borrow::Cow::Borrowed(#defun_prefix)),
+            None => quote!(FEATURE),
+            Some(defun_prefix) => quote!(#defun_prefix),
         };
         let set_prefix = quote! {
             {
                 let mut prefix = #prefix.try_lock()
                     .expect("Failed to acquire write lock on module prefix");
-                *prefix = [#defun_prefix, ::std::borrow::Cow::Borrowed(#separator)];
+                *prefix = [#defun_prefix, #separator];
             }
         };
         let configure_mod_in_name = quote! {
@@ -152,12 +185,12 @@ impl Module {
         quote! {
             #[allow(non_snake_case)]
             fn #init(#env: &::emacs::Env) -> ::emacs::Result<::emacs::Value<'_>> {
-                let feature = #feature;
+                const FEATURE: &str = #feature;
                 #set_prefix
                 #configure_mod_in_name
                 #export_lisp_funcs
                 #hook(#env)?;
-                #env.provide(&feature)
+                #env.provide(FEATURE)
             }
         }
     }
