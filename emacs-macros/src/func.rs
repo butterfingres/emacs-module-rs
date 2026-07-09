@@ -266,7 +266,7 @@ impl LispFunc {
             fn #registrator() {
                 let mut funcs = #init_fns.lock()
                     .expect("Failed to acquire a write lock on initializers");
-                funcs.push(::std::boxed::Box::new(#exporter));
+                funcs.push(#exporter);
             }
         }
     }

@@ -33,7 +33,7 @@ macro_rules! __module_init {
     };
 }
 
-type InitFn = Box<dyn Fn(&Env) -> Result<()> + Send + 'static>;
+type InitFn = fn(&Env) -> Result<()>;
 
 // TODO: How about defining these in user crate, and requiring #[module] to be at the crate's root?
 // TODO: We probably don't need the mutexes.
