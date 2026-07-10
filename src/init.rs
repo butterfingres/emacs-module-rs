@@ -137,8 +137,14 @@ pub fn initialize<F>(env: &Env, init: F) -> os::raw::c_int
     }
 }
 
-fn lisp_name(s: &str) -> String {
-    s.replace("_", "-")
+fn lisp_name(s: String) -> String {
+    s.chars()
+        .map(|ch| if ch == '_' {
+            '-'
+        } else {
+            ch
+        })
+        .collect()
 }
 
 pub fn lisp_path(mod_path: &str, prefix: &str) -> String {
@@ -148,5 +154,5 @@ pub fn lisp_path(mod_path: &str, prefix: &str) -> String {
         path.push_str(segment);
         path.push('-');
     }
-    lisp_name(&path)
+    lisp_name(path)
 }
