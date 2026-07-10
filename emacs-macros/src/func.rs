@@ -239,8 +239,8 @@ impl LispFunc {
         // CallEnv wrapper.
         quote! {
             #define_wrapper
-            fn #exporter(env: &::emacs::Env) -> ::emacs::Result<()> {
-                let prefix = ::emacs::init::lisp_path(#path);
+            fn #exporter(env: &::emacs::Env, prefix: &str) -> ::emacs::Result<()> {
+                let prefix = ::emacs::init::lisp_path(#path, prefix);
                 ::emacs::__export_functions! {
                     env, prefix, {
                         #lisp_name => (#wrapper, #min..#max, #doc),

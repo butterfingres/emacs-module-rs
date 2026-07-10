@@ -193,8 +193,10 @@ impl Module {
             {
                 let funcs = #init_fns.try_lock()
                     .expect("Failed to acquire a read lock on initializers");
+                let prefix = #prefix.try_lock()
+                    .expect("Failed to acquire read lock on module prefix");
                 for func in funcs.iter() {
-                    func(#env)?
+                    func(#env, &prefix)?;
                 }
             }
         };
